@@ -54,7 +54,7 @@
             </form>
             
             <div class="login-footer">
-                <p>&copy; 2023 Sistema Corporativo. Todos los derechos reservados.</p>
+                <p>&copy; 2025 Sistema Corporativo. Todos los derechos reservados.</p>
             </div>
         </div>
     </div>
@@ -67,9 +67,9 @@
             const password = document.getElementById('password').value;
 
             if (username === 'admin' && password === 'admin') {
-                window.location.href = 'dashboardAdmin.html';
+                window.location.href = 'dashboard.html';
             } else if (username === 'empleado' && password === 'empleado') {
-                window.location.href = 'pantallausuario.html';
+                window.location.href = 'vistaEmpleado.html';
             } else {
                 showError('Usuario o contraseña incorrectos');
             }
