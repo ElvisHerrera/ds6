@@ -45,11 +45,11 @@
                         </div>
                         <div class="form-group">
                             <label for="tomo">Tomo:</label>
-                            <input type="number" id="tomo" name="tomo" min="0" max="9999" required>
+                            <input type="text" id="tomo" name="tomo" maxlength="4" required>
                         </div>
                         <div class="form-group">
                             <label for="asiento">Asiento:</label>
-                            <input type="number" id="asiento" name="asiento" min="0" max="99999" required>
+                            <input type="text" id="asiento" name="asiento" maxlength="5" required>
                         </div>
                     </div>
 
@@ -222,16 +222,6 @@
 
                     <div class="form-row two-columns">
                         <div class="form-group">
-                            <label for="cargo">Cargo:</label>
-                            <select id="cargo" name="cargo" required>
-                                <option value="" disabled selected></option>
-                                <option value="administrador">Administrador de Sistemas</option>
-                                <option value="supervisor">Ejecutivo de Ventas</option>
-                                <option value="operador">Desarrollador</option>
-                                <option value="analista">Analista de RRHH</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label for="departamento">Departamento:</label>
                             <select id="departamento" name="departamento" required>
                                 <option value="" disabled selected></option>
@@ -240,6 +230,17 @@
                                 <option value="Desarrollo">Desarrollo</option>
                                 <option value="RRHH">Recursos Humanos</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargo">Cargo:</label>
+                            <select id="cargo" name="cargo" required>
+                                <option value="" disabled selected></option>
+                                <option value="administrador">Administrador de Sistemas</option>
+                                <option value="supervisor">Ejecutivo de Ventas</option>
+                                <option value="operador">Desarrollador</option>
+                                <option value="analista">Analista de RRHH</option>
+                            </select>
+                        
                         </div>
                     </div>
 
@@ -260,6 +261,9 @@
                                 <option value="inactivo">Inactivo</option>
                             </select>   
                         </div>
+                        <div class="form-group">
+                            <label for="validar_contraseña">Confirmar Contraseña:</label>
+                            <input type="password" id="validar_contraseña" name="validar_contraseña" required>
                     </div>
                 </div>
             </section>
@@ -283,10 +287,36 @@
             apellidoCheck.addEventListener('change', function() {
                 apellidoCasada.disabled = !this.checked;
                 if (!this.checked) {
-                    apellidoCasada.value = '';
+                    apellidoCasada.value = apellidoCasada.value;
                 }
+            });
+
+            const tomoInput = document.getElementById('tomo');
+            const asientoInput = document.getElementById('asiento');
+
+            function allowOnlyNumbers(event) {
+                event.target.value = event.target.value.replace(/\D/g, ''); // Elimina cualquier carácter no numérico
+            }
+
+            tomoInput.addEventListener('input', allowOnlyNumbers);
+            asientoInput.addEventListener('input', allowOnlyNumbers);
+
+            const inputs = [
+                document.getElementById('first-name'),
+                document.getElementById('second-name'),
+                document.getElementById('first-lastname'),
+                document.getElementById('second-lastname')
+            ];
+
+            function allowOnlyLetters(event) {
+                event.target.value = event.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); // Permite solo letras y espacios
+            }
+
+            inputs.forEach(input => {
+                input.addEventListener('input', allowOnlyLetters);
             });
         });
     </script>
 </body>
 </html>
+``` 
