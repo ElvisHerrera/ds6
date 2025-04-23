@@ -128,11 +128,11 @@
                     <div class="form-row two-columns">
                         <div class="form-group">
                             <label for="Celular">Celular:</label>
-                            <input type="tel" id="Celular" name="Celular" required>
+                            <input type="tel" id="Celular" name="Celular" maxlength="8" pattern="\d{8}" title="El número de celular debe tener exactamente 8 dígitos" required>
                         </div>
                         <div class="form-group">
                             <label for="telefono">Teléfono:</label>
-                            <input type="tel" id="telefono" name="telefono">
+                            <input type="tel" id="telefono" name="telefono" maxlength="7" pattern="\d{7}" title="El número de teléfono debe tener exactamente 7 dígitos" required>
                         </div>
                     </div>
                 </div>
@@ -264,6 +264,7 @@
                         <div class="form-group">
                             <label for="validar_contraseña">Confirmar Contraseña:</label>
                             <input type="password" id="validar_contraseña" name="validar_contraseña" required>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -287,7 +288,7 @@
             apellidoCheck.addEventListener('change', function() {
                 apellidoCasada.disabled = !this.checked;
                 if (!this.checked) {
-                    apellidoCasada.value = apellidoCasada.value;
+                    apellidoCasada.value = apellidoCasada.value; // Limpia el campo si se deshabilita
                 }
             });
 
@@ -315,8 +316,47 @@
             inputs.forEach(input => {
                 input.addEventListener('input', allowOnlyLetters);
             });
+
+            apellidoCasada.addEventListener('input', allowOnlyLetters);
+
+            const contrasena = document.getElementById('contrasena');
+            const validarContrasena = document.getElementById('validar_contraseña');
+
+            function validatePasswords() {
+                if (validarContrasena.value !== contrasena.value) {
+                    validarContrasena.setCustomValidity('Las contraseñas no coinciden');
+                    validarContrasena.title = 'Las contraseñas no coinciden';
+                } else {
+                    validarContrasena.setCustomValidity('');
+                    validarContrasena.title = '';
+                }
+            }
+
+            contrasena.addEventListener('input', validatePasswords);
+            validarContrasena.addEventListener('input', validatePasswords);
+
+            const celularInput = document.getElementById('Celular');
+
+            function validateCelular(event) {
+                event.target.value = event.target.value.replace(/\D/g, ''); // Elimina cualquier carácter no numérico
+                if (event.target.value.length > 8) {
+                    event.target.value = event.target.value.slice(0, 8); // Limita a 8 dígitos
+                }
+            }
+
+            celularInput.addEventListener('input', validateCelular);
+
+            const telefonoInput = document.getElementById('telefono');
+
+            function validateTelefono(event) {
+                event.target.value = event.target.value.replace(/\D/g, ''); // Elimina cualquier carácter no numérico
+                if (event.target.value.length > 7) {
+                    event.target.value = event.target.value.slice(0, 7); // Limita a 7 dígitos
+                }
+            }
+
+            telefonoInput.addEventListener('input', validateTelefono);
         });
     </script>
 </body>
 </html>
-``` 
