@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1.0, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="formulario.css">
+</head>
+<body>
+    <div class="form-container">
+        <form action="/submit" method="post">
+            <!-- Sección Datos Generales -->
+            <fieldset>
+                <legend><b>Datos Generales</b></legend>
+                <div class="row">
+                    <label for="Cedula">Prefijo:</label>
+                    <select id="Cedula" name="Cedula" required>
+                        <option value="" disabled selected></option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                    </select>
+                    <label for="tomo">Tomo:</label>
+                    <input type="number" id="tomo" name="tomo" min="0" max="9999" required>
+                    <label for="asiento">Asiento:</label>
+                    <input type="number" id="asiento" name="asiento" min="0" max="99999" required>
+                </div>
+                <div class="row">
+                    <label for="first-name">Primer Nombre:</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                    <label for="second-name">Segundo Nombre:</label>
+                    <input type="text" id="second-name" name="second-name" required>
+                </div>
+                <div class="row">
+                    <label for="first-lastname">Primer Apellido:</label>
+                    <input type="text" id="first-lastname" name="first-lastname" required>
+                    <label for="second-lastname">Segundo Apellido:</label>
+                    <input type="text" id="second-lastname" name="second-lastname" required>
+                </div>
+                <div class="row">
+                <label for="name">¿Usa apellido de casada?</label>
+                <input type="checkbox" id="apellidocheck" name="apellidocheck" required>
+                <br><br>
+                <label for="apellidoCasada">Apellido de casada:</label>
+                <input type="text" id="apellidoCasada" name="apellidoCasada" required>
+                <label for="estadoCivil">Estado civil:</label>
+                <select id="estadoCivil" name="estadoCivil" required>
+                    <option value="" disabled selected></option>
+                    <option value="soltero">Soltero</option>
+                    <option value="casado">Casado</option>
+                    <option value="divorciado">Divorciado</option>
+                    <option value="viudo">Viudo</option>
+                </select>
+                </div>
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                <label for="tipo_sangre">Tipo de Sangre:</label>
+                <select id="tipo_sangre" name="tipo_sangre" required>
+                    <option value="" disabled selected></option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                <label for="nacionalidad">Nacionalidad:</label>
+                <select id="nacionalidad" name="nacionalidad" required>
+                    <option value="" disabled selected></option>
+                    <option value="panameña">Panameña</option>
+                    <option value="extranjera">Extranjera</option>
+                </select>
+                <label for="Celular">Celular:</label>
+                <input type="tel" id="Celular" name="Celular" required>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono">   
+            </fieldset>
+
+            <!-- Sección Ubicación -->
+            <fieldset>
+                <div class="row">
+                    <label for="provincia">Provincia:</label>
+                    <select name="provincia" id="provincia" required>provincia</select>
+                    <label for="corregimiento">Corregimiento:</label>
+                    <select name="corregimiento" id="corregimiento" required>corregimiento</select>
+                    <label for="distrito">Distrito:</label>
+                    <select name="distrito" id="distrito" required>distrito</select>
+                </div>
+                <legend>Ubicación</legend>
+                <label for="address">Dirección:</label>
+                <input type="text" id="address" name="address" required>
+                <label for="city">Ciudad:</label>
+                <input type="text" id="city" name="city" required>
+            </fieldset>
+            <br>
+            
+            <!-- Sección Empleado -->
+            <fieldset>
+                <legend>Información del empleado</legend>
+                <label for="fechadecontratacion">Fecha de Contratación:</label>
+                <input type="date" id="fechadecontratacion" name="fechadecontratacion" required>
+                <div class="row">
+                <label for="cargo">Cargo:</label>
+                <select id="cargo" name="cargo" required>
+                    <option value="" disabled selected></option>
+                    <option value="administrador">Administrador de Sistemas</option>
+                    <option value="supervisor">Ejecutivo de Ventas</option>
+                    <option value="operador">Desarrollador</option>
+                    <option value="analista">Analista de RRHH</option>
+                </select>
+                <label for="departamento">Departamento:</label>
+                <select id="departamento" name="departamento" required>
+                    <option value="" disabled selected></option>
+                    <option value="IT">IT</option>
+                    <option value="Ventas">Ventas</option>
+                    <option value="Desarrollo">Desarrollo</option>
+                    <option value="RRHH">Recursos Humanos</option>
+                </select>
+                </div>
+                <label for="correo">Correo Electrónico:</label>
+                <input type="email" id="correo" name="correo" required>
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required>
+            </fieldset>
+            <br>
+            <div class="row">
+                <button type="button" style="background-color: red; color: white;" onclick="window.location.href='dashboardAdmin.html';">Regresar</button>
+                <button type="submit">Enviar</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
