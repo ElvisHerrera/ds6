@@ -130,7 +130,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewButton = document.getElementById('btn-view');
     if (viewButton) {
         viewButton.addEventListener('click', function() {
-            openModal(viewEmployeeModal);
+            const selectedRow = document.querySelector('.row-checkbox:checked').closest('tr');
+            if (selectedRow) {
+                // Obtener los datos del empleado de los atributos de la fila seleccionada
+                const employeeId = selectedRow.getAttribute('data-id');
+                const employeeName = `${selectedRow.getAttribute('data-nombre')} ${selectedRow.getAttribute('data-apellido')}`;
+                const employeeDepartment = selectedRow.getAttribute('data-departamento');
+                const employeePosition = selectedRow.getAttribute('data-cargo');
+                const employeeHireDate = selectedRow.getAttribute('data-fecha');
+                const employeeStatus = selectedRow.getAttribute('data-estado');
+
+                // Asignar los datos al modal
+                document.getElementById('employee-id').textContent = employeeId;
+                document.getElementById('employee-name').textContent = employeeName;
+                document.getElementById('employee-department').textContent = employeeDepartment;
+                document.getElementById('employee-position').textContent = employeePosition;
+                document.getElementById('employee-hire-date').textContent = employeeHireDate;
+                document.getElementById('employee-status').textContent = employeeStatus;
+
+                // Abrir el modal
+                openModal(viewEmployeeModal);
+            }
         });
     }
     

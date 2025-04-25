@@ -1,3 +1,7 @@
+<?php
+include 'conexion.php'; // Incluimos la conexión a la base de datos
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,14 +87,20 @@
                     </div>
 
                     <div class="stats-container">
+                        <?php
+                        // Consultar estadísticas
+                        $totalEmpleados = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 1")->fetch_assoc()['total'];
+                        $nuevosIngresos = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE f_contra >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)")->fetch_assoc()['total'];
+                        $bajas = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
+                        $departamentos = $conexion->query("SELECT COUNT(*) AS total FROM departamento")->fetch_assoc()['total'];
+                        ?>
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fas fa-users"></i>
                             </div>
                             <div class="stat-info">
                                 <h3>Total Empleados</h3>
-                                <p class="stat-number">125</p>
-                                <p class="stat-change positive">+12% este mes</p>
+                                <p class="stat-number"><?php echo $totalEmpleados; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -99,8 +109,7 @@
                             </div>
                             <div class="stat-info">
                                 <h3>Nuevos Ingresos</h3>
-                                <p class="stat-number">18</p>
-                                <p class="stat-change positive">+5% este mes</p>
+                                <p class="stat-number"><?php echo $nuevosIngresos; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -109,8 +118,7 @@
                             </div>
                             <div class="stat-info">
                                 <h3>Bajas</h3>
-                                <p class="stat-number">7</p>
-                                <p class="stat-change negative">+2% este mes</p>
+                                <p class="stat-number"><?php echo $bajas; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -119,8 +127,7 @@
                             </div>
                             <div class="stat-info">
                                 <h3>Departamentos</h3>
-                                <p class="stat-number">8</p>
-                                <p class="stat-change neutral">Sin cambios</p>
+                                <p class="stat-number"><?php echo $departamentos; ?></p>
                             </div>
                         </div>
                     </div>
@@ -129,57 +136,37 @@
                         <div class="chart-card">
                             <div class="chart-header">
                                 <h3>Distribución por Departamento</h3>
-                                <div class="chart-actions">
-                                    <button><i class="fas fa-ellipsis-v"></i></button>
-                                </div>
                             </div>
                             <div class="chart-placeholder">
                                 <div class="chart-bars">
-                                    <div class="chart-bar" style="height: 70%;" data-label="IT"></div>
-                                    <div class="chart-bar" style="height: 90%;" data-label="Ventas"></div>
-                                    <div class="chart-bar" style="height: 50%;" data-label="RRHH"></div>
-                                    <div class="chart-bar" style="height: 80%;" data-label="Desarrollo"></div>
-                                    <div class="chart-bar" style="height: 40%;" data-label="Finanzas"></div>
-                                    <div class="chart-bar" style="height: 60%;" data-label="Marketing"></div>
+                                    <?php
+                                    $departamentoData = $conexion->query("SELECT nombre, COUNT(e.cedula) AS total FROM departamento d LEFT JOIN empleados e ON d.codigo = e.departamento GROUP BY d.codigo");
+                                    while ($row = $departamentoData->fetch_assoc()) {
+                                        $height = ($row['total'] / $totalEmpleados) * 100;
+                                        echo "<div class='chart-bar' style='height: {$height}%;' data-label='{$row['nombre']}'></div>";
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
                         <div class="chart-card">
                             <div class="chart-header">
                                 <h3>Actividad Reciente</h3>
-                                <div class="chart-actions">
-                                    <button><i class="fas fa-ellipsis-v"></i></button>
-                                </div>
                             </div>
                             <div class="activity-list">
-                                <div class="activity-item">
-                                    <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
-                                    <div class="activity-details">
-                                        <p>Nuevo empleado registrado</p>
-                                        <span>Hace 2 horas</span>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon"><i class="fas fa-edit"></i></div>
-                                    <div class="activity-details">
-                                        <p>Actualización de datos de empleado</p>
-                                        <span>Hace 5 horas</span>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon"><i class="fas fa-trash-alt"></i></div>
-                                    <div class="activity-details">
-                                        <p>Empleado eliminado</p>
-                                        <span>Hace 1 día</span>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon"><i class="fas fa-undo"></i></div>
-                                    <div class="activity-details">
-                                        <p>Restauración de registro</p>
-                                        <span>Hace 2 días</span>
-                                    </div>
-                                </div>
+                                <?php
+                                $actividadReciente = $conexion->query("SELECT nombre1, apellido1, f_contra FROM empleados ORDER BY f_contra DESC LIMIT 5");
+                                while ($row = $actividadReciente->fetch_assoc()) {
+                                    echo "
+                                    <div class='activity-item'>
+                                        <div class='activity-icon'><i class='fas fa-user-plus'></i></div>
+                                        <div class='activity-details'>
+                                            <p>{$row['nombre1']} {$row['apellido1']} registrado</p>
+                                            <span>{$row['f_contra']}</span>
+                                        </div>
+                                    </div>";
+                                }
+                                ?>
                             </div>
                         </div>
                     </div>
@@ -198,10 +185,13 @@
                         <div class="table-filters">
                             <select id="department-filter">
                                 <option value="">Todos los departamentos</option>
-                                <option value="IT">IT</option>
-                                <option value="Ventas">Ventas</option>
-                                <option value="RRHH">RRHH</option>
-                                <option value="Desarrollo">Desarrollo</option>
+                                <?php
+                                // Obtener los departamentos de la base de datos
+                                $departamentos = $conexion->query("SELECT codigo, nombre FROM departamento");
+                                while ($departamento = $departamentos->fetch_assoc()) {
+                                    echo "<option value='{$departamento['codigo']}'>{$departamento['nombre']}</option>";
+                                }
+                                ?>
                             </select>
                             <select id="status-filter">
                                 <option value="">Todos los estados</option>
@@ -237,77 +227,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Datos de ejemplo -->
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>001</td>
-                                    <td>Juan</td>
-                                    <td>Pérez</td>
-                                    <td>IT</td>
-                                    <td>Desarrollador</td>
-                                    <td>15/03/2022</td>
-                                    <td><span class="status-badge active">Activo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>002</td>
-                                    <td>María</td>
-                                    <td>González</td>
-                                    <td>RRHH</td>
-                                    <td>Analista</td>
-                                    <td>22/05/2021</td>
-                                    <td><span class="status-badge active">Activo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>003</td>
-                                    <td>Carlos</td>
-                                    <td>Rodríguez</td>
-                                    <td>Ventas</td>
-                                    <td>Ejecutivo</td>
-                                    <td>10/01/2023</td>
-                                    <td><span class="status-badge active">Activo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>004</td>
-                                    <td>Ana</td>
-                                    <td>Martínez</td>
-                                    <td>Desarrollo</td>
-                                    <td>Desarrollador</td>
-                                    <td>05/08/2022</td>
-                                    <td><span class="status-badge inactive">Inactivo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>005</td>
-                                    <td>Pedro</td>
-                                    <td>Sánchez</td>
-                                    <td>IT</td>
-                                    <td>Administrador</td>
-                                    <td>18/11/2021</td>
-                                    <td><span class="status-badge active">Activo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>006</td>
-                                    <td>Laura</td>
-                                    <td>López</td>
-                                    <td>RRHH</td>
-                                    <td>Analista</td>
-                                    <td>30/04/2022</td>
-                                    <td><span class="status-badge active">Activo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="row-checkbox"></td>
-                                    <td>007</td>
-                                    <td>Miguel</td>
-                                    <td>Torres</td>
-                                    <td>Ventas</td>
-                                    <td>Ejecutivo</td>
-                                    <td>12/09/2021</td>
-                                    <td><span class="status-badge inactive">Inactivo</span></td>
-                                </tr>
+                                <?php
+                                // Consultar empleados de la base de datos
+                                $empleados = $conexion->query("
+                                    SELECT e.cedula, e.nombre1, e.apellido1, d.nombre AS departamento, c.nombre AS cargo, e.f_contra, e.estado
+                                    FROM empleados e
+                                    LEFT JOIN departamento d ON e.departamento = d.codigo
+                                    LEFT JOIN cargo c ON e.cargo = c.codigo
+                                ");
+                                while ($empleado = $empleados->fetch_assoc()) {
+                                    $estadoClase = $empleado['estado'] == 1 ? 'active' : 'inactive';
+                                    $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
+                                    echo "
+                                    <tr data-id='{$empleado['cedula']}' data-nombre='{$empleado['nombre1']}' data-apellido='{$empleado['apellido1']}' data-departamento='{$empleado['departamento']}' data-cargo='{$empleado['cargo']}' data-fecha='{$empleado['f_contra']}' data-estado='{$estadoTexto}'>
+                                        <td><input type='checkbox' class='row-checkbox'></td>
+                                        <td>{$empleado['cedula']}</td>
+                                        <td>{$empleado['nombre1']}</td>
+                                        <td>{$empleado['apellido1']}</td>
+                                        <td>{$empleado['departamento']}</td>
+                                        <td>{$empleado['cargo']}</td>
+                                        <td>{$empleado['f_contra']}</td>
+                                        <td><span class='status-badge {$estadoClase}'>{$estadoTexto}</span></td>
+                                    </tr>";
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -430,42 +373,33 @@
                     <div class="employee-info-grid">
                         <div class="info-group">
                             <label>ID:</label>
-                            <p id="employee-id">001</p>
+                            <p id="employee-id"></p>
                         </div>
                         <div class="info-group">
                             <label>Nombre:</label>
-                            <p id="employee-name">Juan Pérez</p>
+                            <p id="employee-name"></p>
                         </div>
                         <div class="info-group">
                             <label>Departamento:</label>
-                            <p id="employee-department">IT</p>
+                            <p id="employee-department"></p>
                         </div>
                         <div class="info-group">
                             <label>Cargo:</label>
-                            <p id="employee-position">Desarrollador</p>
+                            <p id="employee-position"></p>
                         </div>
                         <div class="info-group">
                             <label>Fecha Contratación:</label>
-                            <p id="employee-hire-date">15/03/2022</p>
+                            <p id="employee-hire-date"></p>
                         </div>
                         <div class="info-group">
                             <label>Estado:</label>
-                            <p id="employee-status"><span class="status-badge active">Activo</span></p>
-                        </div>
-                        <div class="info-group">
-                            <label>Correo:</label>
-                            <p id="employee-email">juan.perez@empresa.com</p>
-                        </div>
-                        <div class="info-group">
-                            <label>Teléfono:</label>
-                            <p id="employee-phone">+507 6123-4567</p>
+                            <p id="employee-status"></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="close-view-modal">Cerrar</button>
-                <button class="btn-primary" id="edit-from-view">Editar</button>
             </div>
         </div>
     </div>
