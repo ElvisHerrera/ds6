@@ -1,3 +1,7 @@
+<?php
+include 'conexion.php'; // Incluye la conexión a la base de datos
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -126,9 +130,14 @@
                         <div class="form-group">
                             <label for="nacionalidad">Nacionalidad:</label>
                             <select id="nacionalidad" name="nacionalidad" required>
-                                <option value="" disabled selected></option>
-                                <option value="panameña">Panameña</option>
-                                <option value="extranjera">Extranjera</option>
+                                <option value="" disabled selected>Seleccione una nacionalidad</option>
+                                <?php
+                                $query = "SELECT codigo, pais FROM nacionalidad";
+                                $result = $conexion->query($query);
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['codigo']}'>{$row['pais']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>
@@ -157,33 +166,27 @@
                     <div class="form-row three-columns">
                         <div class="form-group">
                             <label for="provincia">Provincia:</label>
-                            <select name="provincia" id="provincia" required>
-                                <option value="" disabled selected></option>
-                                <option value="panama">Panamá</option>
-                                <option value="colon">Colón</option>
-                                <option value="chiriqui">Chiriquí</option>
-                                <option value="bocas">Bocas del Toro</option>
-                                <option value="veraguas">Veraguas</option>
+                            <select id="provincia" name="provincia" required onchange="cargarDistritos(this.value)">
+                                <option value="" disabled selected>Seleccione una provincia</option>
+                                <?php
+                                $query = "SELECT codigo_provincia, nombre_provincia FROM provincia";
+                                $result = $conexion->query($query);
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['codigo_provincia']}'>{$row['nombre_provincia']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="distrito">Distrito:</label>
-                            <select name="distrito" id="distrito" required>
-                                <option value="" disabled selected></option>
-                                <option value="panama">Panamá</option>
-                                <option value="san_miguelito">San Miguelito</option>
-                                <option value="arraijan">Arraiján</option>
-                                <option value="chorrera">La Chorrera</option>
+                            <select id="distrito" name="distrito" required onchange="cargarCorregimientos(this.value)">
+                                <option value="" disabled selected>Seleccione un distrito</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="corregimiento">Corregimiento:</label>
-                            <select name="corregimiento" id="corregimiento" required>
-                                <option value="" disabled selected></option>
-                                <option value="bella_vista">Bella Vista</option>
-                                <option value="calidonia">Calidonia</option>
-                                <option value="san_francisco">San Francisco</option>
-                                <option value="juan_diaz">Juan Díaz</option>
+                            <select id="corregimiento" name="corregimiento" required>
+                                <option value="" disabled selected>Seleccione un corregimiento</option>
                             </select>
                         </div>
                     </div>
@@ -231,24 +234,22 @@
                     <div class="form-row two-columns">
                         <div class="form-group">
                             <label for="departamento">Departamento:</label>
-                            <select id="departamento" name="departamento" required>
-                                <option value="" disabled selected></option>
-                                <option value="IT">IT</option>
-                                <option value="Ventas">Ventas</option>
-                                <option value="Desarrollo">Desarrollo</option>
-                                <option value="RRHH">Recursos Humanos</option>
+                            <select id="departamento" name="departamento" required onchange="cargarCargos(this.value)">
+                                <option value="" disabled selected>Seleccione un departamento</option>
+                                <?php
+                                $query = "SELECT codigo, nombre FROM departamento";
+                                $result = $conexion->query($query);
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['codigo']}'>{$row['nombre']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="cargo">Cargo:</label>
                             <select id="cargo" name="cargo" required>
-                                <option value="" disabled selected></option>
-                                <option value="administrador">Administrador de Sistemas</option>
-                                <option value="supervisor">Ejecutivo de Ventas</option>
-                                <option value="operador">Desarrollador</option>
-                                <option value="analista">Analista de RRHH</option>
+                                <option value="" disabled selected>Seleccione un cargo</option>
                             </select>
-                        
                         </div>
                     </div>
 
@@ -365,6 +366,55 @@
 
             telefonoInput.addEventListener('input', validateTelefono);
         });
+
+        function cargarDistritos(provinciaId) {
+            if (!provinciaId) return;
+
+            fetch(`ajaxHandler.php?provincia=${provinciaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const distritoSelect = document.getElementById('distrito');
+                    distritoSelect.innerHTML = '<option value="" disabled selected>Seleccione un distrito</option>';
+                    data.forEach(distrito => {
+                        distritoSelect.innerHTML += `<option value="${distrito.codigo_distrito}">${distrito.nombre_distrito}</option>`;
+                    });
+
+                    // Limpiar corregimientos al cambiar de provincia
+                    const corregimientoSelect = document.getElementById('corregimiento');
+                    corregimientoSelect.innerHTML = '<option value="" disabled selected>Seleccione un corregimiento</option>';
+                })
+                .catch(error => console.error('Error al cargar los distritos:', error));
+        }
+
+        function cargarCorregimientos(distritoId) {
+            if (!distritoId) return;
+
+            fetch(`ajaxHandler.php?distrito=${distritoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const corregimientoSelect = document.getElementById('corregimiento');
+                    corregimientoSelect.innerHTML = '<option value="" disabled selected>Seleccione un corregimiento</option>';
+                    data.forEach(corregimiento => {
+                        corregimientoSelect.innerHTML += `<option value="${corregimiento.codigo_corregimiento}">${corregimiento.nombre_corregimiento}</option>`;
+                    });
+                })
+                .catch(error => console.error('Error al cargar los corregimientos:', error));
+        }
+
+        function cargarCargos(departamentoId) {
+            if (!departamentoId) return;
+
+            fetch(`ajaxHandler.php?departamento=${departamentoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const cargoSelect = document.getElementById('cargo');
+                    cargoSelect.innerHTML = '<option value="" disabled selected>Seleccione un cargo</option>';
+                    data.forEach(cargo => {
+                        cargoSelect.innerHTML += `<option value="${cargo.codigo}">${cargo.nombre}</option>`;
+                    });
+                })
+                .catch(error => console.error('Error al cargar los cargos:', error));
+        }
     </script>
 </body>
 </html>
