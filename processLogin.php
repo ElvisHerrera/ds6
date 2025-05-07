@@ -34,8 +34,8 @@ if ($result->num_rows > 0) {
         // Redirigir al dashboard
         header("Location: dashboard.php");
     } else {
-        // Redirigir a vistaEmpleado
-        header("Location: vistaEmpleado.php");
+        // Redirigir a vistaEmpleado con el username como parámetro
+        header("Location: vistaEmpleado.php?username=" . urlencode($user));
     }
 } else {
     // Credenciales incorrectas
