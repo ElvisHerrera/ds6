@@ -19,13 +19,22 @@
                 <p>Ingrese sus credenciales para acceder al sistema</p>
             </div>
             
-            <form id="loginForm" onsubmit="validateLogin(event)">
+            <form id="loginForm" method="POST" action="processLogin.php">
                 <div class="form-group">
                     <label for="username">
                         <i class="fas fa-user"></i>
                         Usuario:
                     </label>
-                    <input type="text" id="username" name="username" placeholder="Ingrese su nombre de usuario" required>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Ingrese su nombre de usuario" 
+                        required 
+                        pattern="[0-9\-]+" 
+                        maxlength="12" 
+                        title="Solo se permiten números y guiones, con un máximo de 12 caracteres"
+                        oninput="filterUsernameInput(this)">
                 </div>
                 
                 <div class="form-group">
@@ -60,21 +69,6 @@
     </div>
 
     <script>
-        function validateLogin(event) {
-            event.preventDefault(); // Evita que el formulario se envíe automáticamente
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (username === 'admin' && password === 'admin') {
-                window.location.href = 'dashboard.html';
-            } else if (username === 'empleado' && password === 'empleado') {
-                window.location.href = 'vistaEmpleado.html';
-            } else {
-                showError('Usuario o contraseña incorrectos');
-            }
-        }
-
         function showError(message) {
             // Verificar si ya existe un mensaje de error
             let errorElement = document.querySelector('.error-message');
@@ -116,6 +110,10 @@
                 toggleIcon.classList.remove('fa-eye-slash');
                 toggleIcon.classList.add('fa-eye');
             }
+        }
+
+        function filterUsernameInput(input) {
+            input.value = input.value.replace(/[^0-9\-]/g, ''); // Elimina cualquier carácter que no sea número o guión
         }
     </script>
 </body>
