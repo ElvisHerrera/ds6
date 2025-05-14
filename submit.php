@@ -44,9 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('sssssssssssssssssssssssssssss', $prefijo, $cedula, $tomo, $asiento, $firstName, $secondName, $firstLastname, $secondLastname, $genero, $apellidoCasada, $usa_ac, $estadoCivil, $fechaNacimiento, $tipoSangre, $nacionalidad, $celular, $telefono, $provincia, $distrito, $corregimiento, $calle, $casa, $comunidad, $fechaContratacion, $departamento, $cargo, $correo, $contrasena, $estado);
 
     if ($stmt->execute()) {
-        echo "Registro exitoso.";
+        echo "<script>
+            alert('Registro exitoso.');
+            window.location.href = 'dashboard.php';
+        </script>";
     } else {
-        echo "Error: " . $stmt->error;
+        echo "<script>
+            alert('Error: " . $stmt->error . "');
+            window.location.href = 'FormularioFinal.php';
+        </script>";
     }
 
     $stmt->close();

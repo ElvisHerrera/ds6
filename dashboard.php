@@ -89,7 +89,7 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                     <div class="stats-container">
                         <?php
                         // Consultar estadísticas
-                        $totalEmpleados = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 1")->fetch_assoc()['total'];
+                        $totalEmpleados = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
                         $nuevosIngresos = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE f_contra >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)")->fetch_assoc()['total'];
                         $bajas = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
                         $departamentos = $conexion->query("SELECT COUNT(*) AS total FROM departamento")->fetch_assoc()['total'];
@@ -176,7 +176,7 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                 <section id="empleados">
                     <div class="section-header">
                         <h1>Gestión de Empleados</h1>
-                        <button class="btn-primary" onclick="window.location.href='FormularioFinal.html'">
+                        <button class="btn-primary" onclick="window.location.href='FormularioFinal.php'">
                             <i class="fas fa-plus"></i> Crear Registro
                         </button>
                     </div>
@@ -236,8 +236,8 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                                     LEFT JOIN cargo c ON e.cargo = c.codigo
                                 ");
                                 while ($empleado = $empleados->fetch_assoc()) {
-                                    $estadoClase = $empleado['estado'] == 1 ? 'active' : 'inactive';
-                                    $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
+                                    $estadoClase = $empleado['estado'] == 0 ? 'active' : 'inactive';
+                                    $estadoTexto = $empleado['estado'] == 0 ? 'Activo' : 'Inactivo';
                                     echo "
                                     <tr data-id='{$empleado['cedula']}' data-nombre='{$empleado['nombre1']}' data-apellido='{$empleado['apellido1']}' data-departamento='{$empleado['departamento']}' data-cargo='{$empleado['cargo']}' data-fecha='{$empleado['f_contra']}' data-estado='{$estadoTexto}'>
                                         <td><input type='checkbox' class='row-checkbox'></td>

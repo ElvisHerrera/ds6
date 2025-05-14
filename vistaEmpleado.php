@@ -27,11 +27,11 @@ $cedula = $_GET['username'];
 
 // Consulta para obtener toda la información del empleado
 $sql = "SELECT e.*, 
-               c.nombre AS cargo_nombre, 
-               d.nombre AS departamento_nombre, 
-               p.nombre_provincia, 
-               dis.nombre_distrito, 
-               cor.nombre_corregimiento 
+            c.nombre AS cargo_nombre, 
+            d.nombre AS departamento_nombre, 
+            p.nombre_provincia, 
+            dis.nombre_distrito, 
+            cor.nombre_corregimiento 
         FROM empleados e
         LEFT JOIN cargo c ON e.cargo = c.codigo
         LEFT JOIN departamento d ON e.departamento = d.codigo
@@ -60,7 +60,7 @@ $conn->close();
 
 // Formatear el nombre completo
 $nombreCompleto = $empleado['nombre1'] . " " . $empleado['nombre2'] . " " . 
-                 $empleado['apellido1'] . " " . $empleado['apellido2'];
+                $empleado['apellido1'] . " " . $empleado['apellido2'];
 
 // Formatear la dirección completa
 $direccionCompleta = "Provincia: " . $empleado['nombre_provincia'] . ", Distrito: " . 
@@ -70,11 +70,14 @@ $direccionCompleta = "Provincia: " . $empleado['nombre_provincia'] . ", Distrito
                     $empleado['casa'];
 
 // Determinar el género para mostrar el icono correcto
-$generoIcono = $empleado['genero'] == 1 ? 'male' : 'female';
+$generoIcono = $empleado['genero'] == 0 ? 'male' : 'female';
 
 // Determinar el estado para mostrar el badge correcto
-$estadoClase = $empleado['estado'] == 1 ? 'active' : 'inactive';
-$estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
+$estadoClase = $empleado['estado'] == 0 ? 'active' : 'inactive';
+$estadoTexto = $empleado['estado'] == 0 ? 'Activo' : 'Inactivo';
+
+// Formatear la fecha de nacimiento
+$fechaNacimiento = date('d-m-y', strtotime($empleado['f_nacimiento']));
 ?>
 
 <!DOCTYPE html>
@@ -165,7 +168,7 @@ $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
                                 <label>Género</label>
                                 <p>
                                     <i class="fas fa-<?php echo $generoIcono; ?>"></i>
-                                    <?php echo $empleado['genero'] == 1 ? 'Masculino' : 'Femenino'; ?>
+                                    <?php echo $empleado['genero'] == 0 ? 'Masculino' : 'Femenino'; ?>
                                 </p>
                             </div>
                             <div class="info-item">
@@ -173,16 +176,16 @@ $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
                                 <p>
                                     <?php
                                     switch ($empleado['estado_civil']) {
-                                        case 1:
+                                        case 0:
                                             echo 'Soltero/a';
                                             break;
-                                        case 2:
+                                        case 1:
                                             echo 'Casado/a';
                                             break;
-                                        case 3:
+                                        case 2:
                                             echo 'Divorciado/a';
                                             break;
-                                        case 4:
+                                        case 3:
                                             echo 'Viudo/a';
                                             break;
                                         default:
@@ -193,7 +196,7 @@ $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
                             </div>
                             <div class="info-item">
                                 <label>Fecha de Nacimiento</label>
-                                <p><?php echo htmlspecialchars($empleado['f_nacimiento']); ?></p>
+                                <p><?php echo htmlspecialchars($fechaNacimiento); ?></p>
                             </div>
                         </div>
                     </div>
@@ -245,11 +248,11 @@ $estadoTexto = $empleado['estado'] == 1 ? 'Activo' : 'Inactivo';
                                 <label>Dirección</label>
                                 <p>
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <strong>Provincia:</strong> <?php echo htmlspecialchars($empleado['nombre_provincia']); ?></p>
-                                <p style="margin-left: 18px;"><strong>Distrito:</strong> <?php echo htmlspecialchars($empleado['nombre_distrito']); ?></p>
-                                <p style="margin-left: 18px;"><strong>Corregimiento:</strong> <?php echo htmlspecialchars($empleado['nombre_corregimiento']); ?></p>
-                                <p style="margin-left: 18px;"><strong>Calle:</strong> <?php echo htmlspecialchars($empleado['calle']); ?></p>
-                                <p style="margin-left: 18px;"><strong>Casa:</strong> <?php echo htmlspecialchars($empleado['casa']); ?></p>
+                                    <strong>Provincia: </strong> <?php echo htmlspecialchars($empleado['nombre_provincia']); ?></p>
+                                <p style="margin-left: 18px;"><strong>Distrito: </strong> <?php echo htmlspecialchars($empleado['nombre_distrito']); ?></p>
+                                <p style="margin-left: 18px;"><strong>Corregimiento: </strong> <?php echo htmlspecialchars($empleado['nombre_corregimiento']); ?></p>
+                                <p style="margin-left: 18px;"><strong>Calle: </strong> <?php echo htmlspecialchars($empleado['calle']); ?></p>
+                                <p style="margin-left: 18px;"><strong>Casa: </strong> <?php echo htmlspecialchars($empleado['casa']); ?></p>
                             </div>
                         </div>
                     </div>

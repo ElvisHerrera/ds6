@@ -268,7 +268,7 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
             </section>
 
             <div class="form-actions">
-                <button type="button" class="btn btn-danger" onclick="window.location.href='dashboard.html';">
+                <button type="button" class="btn btn-danger" onclick="window.location.href='dashboard.php';">
                     <i class="fas fa-arrow-left"></i> Regresar
                 </button>
                 <button type="submit" class="btn btn-primary">
