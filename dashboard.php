@@ -269,7 +269,7 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                 <!-- Sección de Eliminados -->
                 <section id="eliminados">
                     <div class="section-header">
-                        <h1>Registros Eliminados</h1>
+                        <h1>Empleados Eliminados</h1>
                         <p>Empleados eliminados temporalmente</p>
                     </div>
 
@@ -306,42 +306,11 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                                     <th>Apellido</th>
                                     <th>Departamento</th>
                                     <th>Cargo</th>
-                                    <th>Fecha Eliminación</th>
-                                    <th>Eliminado por</th>
+                                    <th>Fecha Contratación</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Datos de ejemplo -->
-                                <tr>
-                                    <td><input type="checkbox" class="deleted-row-checkbox"></td>
-                                    <td>008</td>
-                                    <td>Roberto</td>
-                                    <td>Gómez</td>
-                                    <td>IT</td>
-                                    <td>Desarrollador</td>
-                                    <td>10/04/2023</td>
-                                    <td>admin</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="deleted-row-checkbox"></td>
-                                    <td>009</td>
-                                    <td>Sofía</td>
-                                    <td>Hernández</td>
-                                    <td>Ventas</td>
-                                    <td>Ejecutivo</td>
-                                    <td>22/03/2023</td>
-                                    <td>admin</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" class="deleted-row-checkbox"></td>
-                                    <td>010</td>
-                                    <td>Javier</td>
-                                    <td>Díaz</td>
-                                    <td>RRHH</td>
-                                    <td>Analista</td>
-                                    <td>05/02/2023</td>
-                                    <td>admin</td>
-                                </tr>
+                                <!-- Aquí se llenará dinámicamente con AJAX -->
                             </tbody>
                         </table>
                     </div>
