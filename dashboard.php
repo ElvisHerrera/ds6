@@ -114,8 +114,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                 </div>
                 <div class="top-bar-actions">
                     <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                        <i class="fas fa-bell"></i>         
                     </button>
                     <button class="profile-btn">
                         <i class="fas fa-user-circle"></i>
@@ -137,7 +136,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         // Consultar estadísticas
                         $totalEmpleados = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
                         $nuevosIngresos = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE f_contra >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)")->fetch_assoc()['total'];
-                        $bajas = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
+                        $bajas = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 1")->fetch_assoc()['total'];
                         $departamentos = $conexion->query("SELECT COUNT(*) AS total FROM departamento")->fetch_assoc()['total'];
                         ?>
                         <div class="stat-card">
@@ -197,7 +196,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         </div>
                         <div class="chart-card">
                             <div class="chart-header">
-                                <h3>Actividad Reciente</h3>
+                                <h3>Registros Recientes</h3>
                             </div>
                             <div class="activity-list">
                                 <?php
