@@ -1,5 +1,34 @@
 <?php
-include 'conexion.php'; // Incluimos la conexión a la base de datos
+// Validación de acceso RRHH antes de cualquier salida HTML
+session_start();
+if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
+    include 'conexion.php';
+    $usuario = $_POST['usuario'];
+    $contrasena = $_POST['contrasena'];
+    $stmt = $conexion->prepare("SELECT departamento FROM empleados WHERE cedula = ? AND contraseña = ?");
+    $stmt->bind_param("ss", $usuario, $contrasena);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        echo "<script>alert('Credenciales inválidas.'); window.location.href='login.php';</script>";
+        exit;
+    } else {
+        $row = $result->fetch_assoc();
+        if ($row['departamento'] !== '04') {
+            echo "<script>alert('No tiene permisos para acceder a este panel.'); window.location.href='login.php';</script>";
+            exit;
+        }
+        // Guardar sesión si se desea
+        $_SESSION['usuario'] = $usuario;
+        $_SESSION['departamento'] = $row['departamento'];
+    }
+    $stmt->close();
+    // $conexion queda disponible para el resto del dashboard
+} else if (!isset($_SESSION['usuario']) || !isset($_SESSION['departamento']) || $_SESSION['departamento'] !== '04') {
+    // Si no hay sesión válida, redirigir a login
+    header('Location: login.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,8 +54,29 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                     <i class="fas fa-user-tie"></i>
                 </div>
                 <div class="user-info">
-                    <h3>Administrador</h3>
-                    <p>admin@empresa.com</p>
+                    <h3><?php
+                        // Mostrar el nombre del administrador logueado
+                        if (isset($_SESSION['usuario'])) {
+                            $cedula = $_SESSION['usuario'];
+                            $nombreAdmin = '';
+                            $cargoAdmin = '';
+                            if (isset($conexion)) {
+                                $stmt = $conexion->prepare("SELECT CONCAT(nombre1, ' ', apellido1) AS nombre, c.nombre AS cargo FROM empleados e LEFT JOIN cargo c ON e.cargo = c.codigo WHERE cedula = ?");
+                                $stmt->bind_param("s", $cedula);
+                                $stmt->execute();
+                                $stmt->bind_result($nombre, $cargo);
+                                if ($stmt->fetch()) {
+                                    $nombreAdmin = $nombre;
+                                    $cargoAdmin = $cargo;
+                                }
+                                $stmt->close();
+                            }
+                            echo htmlspecialchars($nombreAdmin ?: $cedula);
+                        } else {
+                            echo 'Administrador';
+                        }
+                    ?></h3>
+                    <p><?php echo htmlspecialchars($cargoAdmin ?: 'Cargo'); ?></p>
                 </div>
             </div>
             
@@ -44,11 +94,7 @@ include 'conexion.php'; // Incluimos la conexión a la base de datos
                     <span>Eliminados</span>
                 </li>
                 <li class="sidebar-divider"></li>
-                <li data-section="configuracion">
-                    <i class="fas fa-cog"></i>
-                    <span>Configuración</span>
-                </li>
-                <li onclick="window.location.href='login.html'">
+                <li onclick="window.location.href='login.php'">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar Sesión</span>
                 </li>

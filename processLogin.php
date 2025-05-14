@@ -31,8 +31,13 @@ if ($result->num_rows > 0) {
     $departamento = $row['departamento'];
 
     if ($departamento === '04') { // Código para RRHH
-        // Redirigir al dashboard
-        header("Location: dashboard.php");
+        // Redirigir al dashboard enviando usuario y contraseña por POST
+        echo '<form id="rrhhForm" action="dashboard.php" method="post" style="display:none;">
+            <input type="hidden" name="usuario" value="' . htmlspecialchars($user) . '">
+            <input type="hidden" name="contrasena" value="' . htmlspecialchars($pass) . '">
+        </form>';
+        echo '<script>document.getElementById("rrhhForm").submit();</script>';
+        exit;
     } else {
         // Redirigir a vistaEmpleado con el username como parámetro
         header("Location: vistaEmpleado.php?username=" . urlencode($user));
