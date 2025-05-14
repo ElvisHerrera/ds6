@@ -192,6 +192,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Botón Editar
+    const editButton = document.getElementById('btn-edit');
+    if (editButton) {
+        editButton.addEventListener('click', function() {
+            const selectedRow = document.querySelector('.row-checkbox:checked');
+            if (selectedRow) {
+                const tr = selectedRow.closest('tr');
+                const cedula = tr.getAttribute('data-id');
+                if (cedula) {
+                    window.location.href = `EditarFormulario.php?cedula=${encodeURIComponent(cedula)}`;
+                }
+            }
+        });
+    }
+    
     // Botón Restaurar
     const restoreButton = document.getElementById('btn-restore');
     if (restoreButton) {
