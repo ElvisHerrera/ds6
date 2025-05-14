@@ -193,17 +193,6 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
 
                     <div class="form-row two-columns">
                         <div class="form-group">
-                            <label for="address">Dirección:</label>
-                            <input type="text" id="address" name="address" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="city">Ciudad:</label>
-                            <input type="text" id="city" name="city" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row two-columns">
-                        <div class="form-group">
                             <label for="calle">Calle:</label>
                             <input type="text" id="calle" name="calle" required>
                         </div>
