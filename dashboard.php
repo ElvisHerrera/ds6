@@ -1,8 +1,8 @@
 <?php
+include 'conexion.php'; // <-- Asegura la conexión SIEMPRE
 // Validación de acceso RRHH antes de cualquier salida HTML
 session_start();
 if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
-    include 'conexion.php';
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
     $stmt = $conexion->prepare("SELECT departamento FROM empleados WHERE cedula = ? AND contraseña = ?");

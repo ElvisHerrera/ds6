@@ -64,7 +64,7 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
                         </div>
                         <div class="form-group">
                             <label for="second-name">Segundo Nombre:</label>
-                            <input type="text" id="second-name" name="second-name" required>
+                            <input type="text" id="second-name" name="second-name">
                         </div>
                     </div>
 

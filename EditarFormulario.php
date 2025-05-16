@@ -14,6 +14,53 @@ if (isset($_GET['cedula'])) {
     }
     $stmt->close();
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedula'])) {
+    include 'conexion.php';
+    $cedula_actual = $_GET['cedula'];
+    // Recoger todos los campos del formulario
+    $prefijo = $_POST['Cedula'];
+    $tomo = $_POST['tomo'];
+    $asiento = $_POST['asiento'];
+    $nombre1 = $_POST['first-name'];
+    $nombre2 = $_POST['second-name'];
+    $apellido1 = $_POST['first-lastname'];
+    $apellido2 = $_POST['second-lastname'];
+    $genero = $_POST['genero'];
+    $usa_ac = isset($_POST['apellidocheck']) ? 1 : 0;
+    $apellidoc = isset($_POST['apellidoCasada']) ? $_POST['apellidoCasada'] : null;
+    $estado_civil = $_POST['estadoCivil'];
+    $f_nacimiento = $_POST['fechaNacimiento'];
+    $tipo_sangre = $_POST['tipo_sangre'];
+    $nacionalidad = $_POST['nacionalidad'];
+    $celular = $_POST['Celular'];
+    $telefono = $_POST['telefono'];
+    $provincia = $_POST['provincia'];
+    $distrito = $_POST['distrito'];
+    $corregimiento = $_POST['corregimiento'];
+    $calle = $_POST['calle'];
+    $casa = $_POST['casa'];
+    $comunidad = $_POST['comunidad'];
+    $f_contra = $_POST['fechadecontratacion'];
+    $departamento = $_POST['departamento'];
+    $cargo = $_POST['cargo'];
+    $correo = $_POST['correo'];
+    $contrasena = $_POST['contrasena'];
+    $estado = ($_POST['estado'] === 'activo') ? 0 : 1;
+
+    $stmt = $conexion->prepare("UPDATE empleados SET prefijo=?, tomo=?, asiento=?, nombre1=?, nombre2=?, apellido1=?, apellido2=?, genero=?, usa_ac=?, apellidoc=?, estado_civil=?, f_nacimiento=?, tipo_sangre=?, nacionalidad=?, celular=?, telefono=?, provincia=?, distrito=?, corregimiento=?, calle=?, casa=?, comunidad=?, f_contra=?, departamento=?, cargo=?, correo=?, contraseña=?, estado=? WHERE cedula=?");
+    $stmt->bind_param(
+        "ssssssssissssssssssssssssssis",
+        $prefijo, $tomo, $asiento, $nombre1, $nombre2, $apellido1, $apellido2, $genero, $usa_ac, $apellidoc, $estado_civil, $f_nacimiento, $tipo_sangre, $nacionalidad, $celular, $telefono, $provincia, $distrito, $corregimiento, $calle, $casa, $comunidad, $f_contra, $departamento, $cargo, $correo, $contrasena, $estado, $cedula_actual
+    );
+    if ($stmt->execute()) {
+        echo "<script>alert('Empleado actualizado correctamente.'); window.location.href='dashboard.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Error al actualizar el empleado.');</script>";
+    }
+    $stmt->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -28,11 +75,11 @@ if (isset($_GET['cedula'])) {
 <body>
     <div class="container">
         <header>
-            <h1>Sistema de Registro de Empleados</h1>
+            <h1>Sistema de Edición de Registro de Empleados</h1>
             <p>Complete el formulario con la información requerida</p>
         </header>
 
-        <form action="/submit.php" method="post">
+        <form action="EditarFormulario.php?cedula=<?php echo urlencode($cedula); ?>" method="post">
             <!-- Sección Datos Generales -->
             <section class="form-section">
                 <div class="section-header">
@@ -71,7 +118,7 @@ if (isset($_GET['cedula'])) {
                         </div>
                         <div class="form-group">
                             <label for="second-name">Segundo Nombre:</label>
-                            <input type="text" id="second-name" name="second-name" required value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['nombre2']) : ''; ?>">
+                            <input type="text" id="second-name" name="second-name" value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['nombre2']) : ''; ?>">
                         </div>
                     </div>
 
@@ -270,7 +317,7 @@ if (isset($_GET['cedula'])) {
                         </div>
                         <div class="form-group">
                             <label for="validar_contraseña">Confirmar Contraseña:</label>
-                            <input type="password" id="validar_contraseña" name="validar_contraseña" required>
+                            <input type="password" id="validar_contraseña" name="validar_contraseña" required value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['contraseña']) : ''; ?>">
                         </div>
                     </div>
                 </div>
