@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                     <div class="form-row three-columns">
                         <div class="form-group">
                             <label for="Cedula">Prefijo:</label>
-                            <select id="Cedula" name="Cedula" required>
+                            <select id="Cedula" name="Cedula" required disabled>
                                 <option value="" disabled></option>
                                 <?php
                                 for ($i = 1; $i <= 13; $i++) {
@@ -103,11 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                         </div>
                         <div class="form-group">
                             <label for="tomo">Tomo:</label>
-                            <input type="text" id="tomo" name="tomo" maxlength="4" required value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['tomo']) : ''; ?>">
+                            <input type="text" id="tomo" name="tomo" maxlength="4" required disabled value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['tomo']) : ''; ?>">
                         </div>
                         <div class="form-group">
                             <label for="asiento">Asiento:</label>
-                            <input type="text" id="asiento" name="asiento" maxlength="5" required value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['asiento']) : ''; ?>">
+                            <input type="text" id="asiento" name="asiento" maxlength="5" required disabled value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['asiento']) : ''; ?>">
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                         </div>
                         <div class="form-group">
                             <label for="second-lastname">Segundo Apellido:</label>
-                            <input type="text" id="second-lastname" name="second-lastname" required value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['apellido2']) : ''; ?>">
+                            <input type="text" id="second-lastname" name="second-lastname" value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['apellido2']) : ''; ?>">
                         </div>
                         <div class="form-group">
                             <label for="genero">Género:</label>
@@ -185,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                             <select id="nacionalidad" name="nacionalidad" required>
                                 <option value="" disabled>Seleccione una nacionalidad</option>
                                 <?php
-                                $query = "SELECT codigo, pais FROM nacionalidad";
+                                $query = "SELECT codigo, pais FROM nacionalidad ORDER BY pais ASC";
                                 $result = $conexion->query($query);
                                 while ($row = $result->fetch_assoc()) {
                                     $selected = ($empleadoData && $empleadoData['nacionalidad'] == $row['codigo']) ? 'selected' : '';

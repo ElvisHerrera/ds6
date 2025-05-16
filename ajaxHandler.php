@@ -124,7 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => false, 'message' => 'Acción no válida']);
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getDeletedEmployees') {
-    $query = "SELECT cedula, nombre1, apellido1, departamento, cargo, f_contra, 'admin' AS eliminado_por FROM e_eliminados";
+    $query = "SELECT e.cedula, e.nombre1, e.apellido1, d.nombre AS departamento, c.nombre AS cargo, e.f_contra, 'admin' AS eliminado_por
+    FROM e_eliminados e
+    LEFT JOIN departamento d ON e.departamento = d.codigo
+    LEFT JOIN cargo c ON e.cargo = c.codigo";
     $result = $conexion->query($query);
 
     $deletedEmployees = [];

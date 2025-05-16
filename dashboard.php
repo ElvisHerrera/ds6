@@ -105,12 +105,12 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
         <div class="main-content">
             <!-- Barra superior -->
             <div class="top-bar">
-                <button id="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Buscar...">
+                <div class="sidebar-indicator">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="welcome-message">
+                    <h2>Bienvenido, <?php echo htmlspecialchars($nombreAdmin ?: 'Administrador'); ?></h2>
+                    <p>Panel de administración de recursos humanos</p>
                 </div>
                 <div class="top-bar-actions">
                     <button class="notification-btn">
@@ -131,7 +131,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         <p>Bienvenido al panel de administración</p>
                     </div>
 
-                    <div class="stats-container">
+                    <div class="stats-container" id="stats-container">
                         <?php
                         // Consultar estadísticas
                         $totalEmpleados = $conexion->query("SELECT COUNT(*) AS total FROM empleados WHERE estado = 0")->fetch_assoc()['total'];
@@ -145,7 +145,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                             </div>
                             <div class="stat-info">
                                 <h3>Total Empleados</h3>
-                                <p class="stat-number"><?php echo $totalEmpleados; ?></p>
+                                <p class="stat-number" id="total-empleados"><?php echo $totalEmpleados; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -154,7 +154,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                             </div>
                             <div class="stat-info">
                                 <h3>Nuevos Ingresos</h3>
-                                <p class="stat-number"><?php echo $nuevosIngresos; ?></p>
+                                <p class="stat-number" id="nuevos-ingresos"><?php echo $nuevosIngresos; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -163,7 +163,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                             </div>
                             <div class="stat-info">
                                 <h3>Bajas</h3>
-                                <p class="stat-number"><?php echo $bajas; ?></p>
+                                <p class="stat-number" id="bajas"><?php echo $bajas; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -172,7 +172,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                             </div>
                             <div class="stat-info">
                                 <h3>Departamentos</h3>
-                                <p class="stat-number"><?php echo $departamentos; ?></p>
+                                <p class="stat-number" id="departamentos"><?php echo $departamentos; ?></p>
                             </div>
                         </div>
                     </div>
@@ -181,14 +181,17 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         <div class="chart-card">
                             <div class="chart-header">
                                 <h3>Distribución por Departamento</h3>
+                                <div class="chart-actions">
+                                    <button id="refresh-chart"><i class="fas fa-sync-alt"></i></button>
+                                </div>
                             </div>
-                            <div class="chart-placeholder">
+                            <div class="chart-placeholder" id="chart-departamentos">
                                 <div class="chart-bars">
                                     <?php
-                                    $departamentoData = $conexion->query("SELECT nombre, COUNT(e.cedula) AS total FROM departamento d LEFT JOIN empleados e ON d.codigo = e.departamento GROUP BY d.codigo");
+                                    $departamentoData = $conexion->query("SELECT d.nombre, COUNT(e.cedula) AS total FROM departamento d LEFT JOIN empleados e ON d.codigo = e.departamento GROUP BY d.codigo");
                                     while ($row = $departamentoData->fetch_assoc()) {
-                                        $height = ($row['total'] / $totalEmpleados) * 100;
-                                        echo "<div class='chart-bar' style='height: {$height}%;' data-label='{$row['nombre']}'></div>";
+                                        $height = ($row['total'] / ($totalEmpleados > 0 ? $totalEmpleados : 1)) * 100;
+                                        echo "<div class='chart-bar' style='height: {$height}%;' data-label='{$row['nombre']}' data-value='{$row['total']}'></div>";
                                     }
                                     ?>
                                 </div>
@@ -197,8 +200,11 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         <div class="chart-card">
                             <div class="chart-header">
                                 <h3>Registros Recientes</h3>
+                                <div class="chart-actions">
+                                    <button id="refresh-activity"><i class="fas fa-sync-alt"></i></button>
+                                </div>
                             </div>
-                            <div class="activity-list">
+                            <div class="activity-list" id="activity-list">
                                 <?php
                                 $actividadReciente = $conexion->query("SELECT nombre1, apellido1, f_contra FROM empleados ORDER BY f_contra DESC LIMIT 5");
                                 while ($row = $actividadReciente->fetch_assoc()) {
@@ -228,13 +234,17 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
 
                     <div class="table-actions">
                         <div class="table-filters">
+                            <div class="search-bar">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="employee-search" placeholder="Buscar empleado...">
+                            </div>
                             <select id="department-filter">
                                 <option value="">Todos los departamentos</option>
                                 <?php
                                 // Obtener los departamentos de la base de datos
                                 $departamentos = $conexion->query("SELECT codigo, nombre FROM departamento");
                                 while ($departamento = $departamentos->fetch_assoc()) {
-                                    echo "<option value='{$departamento['codigo']}'>{$departamento['nombre']}</option>";
+                                    echo "<option value='{$departamento['nombre']}'>{$departamento['nombre']}</option>";
                                 }
                                 ?>
                             </select>
@@ -300,14 +310,17 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         </table>
                     </div>
 
-                    <div class="pagination">
-                        <button class="pagination-btn"><i class="fas fa-angle-double-left"></i></button>
-                        <button class="pagination-btn"><i class="fas fa-angle-left"></i></button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">2</button>
-                        <button class="pagination-btn">3</button>
-                        <button class="pagination-btn"><i class="fas fa-angle-right"></i></button>
-                        <button class="pagination-btn"><i class="fas fa-angle-double-right"></i></button>
+                    <div class="pagination-info">
+                        <span id="pagination-info-employees">Mostrando 0-0 de 0 registros</span>
+                    </div>
+                    <div class="pagination" id="pagination-employees">
+                        <button class="pagination-btn" data-action="first"><i class="fas fa-angle-double-left"></i></button>
+                        <button class="pagination-btn" data-action="prev"><i class="fas fa-angle-left"></i></button>
+                        <div class="pagination-numbers" id="pagination-numbers-employees">
+                            <!-- Aquí se generarán los números de página dinámicamente -->
+                        </div>
+                        <button class="pagination-btn" data-action="next"><i class="fas fa-angle-right"></i></button>
+                        <button class="pagination-btn" data-action="last"><i class="fas fa-angle-double-right"></i></button>
                     </div>
                 </section>
 
@@ -320,12 +333,19 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
 
                     <div class="table-actions">
                         <div class="table-filters">
+                            <div class="search-bar">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="deleted-employee-search" placeholder="Buscar empleado eliminado...">
+                            </div>
                             <select id="deleted-department-filter">
                                 <option value="">Todos los departamentos</option>
-                                <option value="IT">IT</option>
-                                <option value="Ventas">Ventas</option>
-                                <option value="RRHH">RRHH</option>
-                                <option value="Desarrollo">Desarrollo</option>
+                                <?php
+                                // Reutilizar la consulta de departamentos
+                                $departamentos = $conexion->query("SELECT codigo, nombre FROM departamento");
+                                while ($departamento = $departamentos->fetch_assoc()) {
+                                    echo "<option value='{$departamento['nombre']}'>{$departamento['nombre']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         <div class="selected-actions" id="deleted-selected-actions">
@@ -360,12 +380,17 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         </table>
                     </div>
 
-                    <div class="pagination">
-                        <button class="pagination-btn"><i class="fas fa-angle-double-left"></i></button>
-                        <button class="pagination-btn"><i class="fas fa-angle-left"></i></button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn"><i class="fas fa-angle-right"></i></button>
-                        <button class="pagination-btn"><i class="fas fa-angle-double-right"></i></button>
+                    <div class="pagination-info">
+                        <span id="pagination-info-deleted">Mostrando 0-0 de 0 registros</span>
+                    </div>
+                    <div class="pagination" id="pagination-deleted">
+                        <button class="pagination-btn" data-action="first"><i class="fas fa-angle-double-left"></i></button>
+                        <button class="pagination-btn" data-action="prev"><i class="fas fa-angle-left"></i></button>
+                        <div class="pagination-numbers" id="pagination-numbers-deleted">
+                            <!-- Aquí se generarán los números de página dinámicamente -->
+                        </div>
+                        <button class="pagination-btn" data-action="next"><i class="fas fa-angle-right"></i></button>
+                        <button class="pagination-btn" data-action="last"><i class="fas fa-angle-double-right"></i></button>
                     </div>
                 </section>
             </div>
@@ -460,6 +485,23 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
         </div>
     </div>
 
+    <!-- Modal de notificación -->
+    <div class="modal" id="notification-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="notification-title">Notificación</h2>
+                <button class="close-modal" id="close-notification-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="notification-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="ok-notification-modal">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archivo AJAX para actualizar datos dinámicamente -->
     <script src="dashboard.js"></script>
 </body>
 </html>

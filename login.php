@@ -48,14 +48,6 @@
                     </div>
                 </div>
                 
-                <div class="form-options">
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember" name="remember">
-                        <label for="remember">Recordarme</label>
-                    </div>
-                    <a href="#" class="forgot-password">¿Olvidó su contraseña?</a>
-                </div>
-                
                 <button type="submit" class="btn-login">
                     <i class="fas fa-sign-in-alt"></i>
                     Iniciar Sesión
