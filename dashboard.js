@@ -84,31 +84,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Gestión de selección en tabla de eliminados
+    // Gestión de selección en tabla de eliminados (delegación de eventos para checkboxes dinámicos)
+    const deletedTableBody = document.querySelector('#deleted-employees-table tbody');
     const deletedSelectAll = document.getElementById('deleted-select-all');
-    const deletedRowCheckboxes = document.querySelectorAll('.deleted-row-checkbox');
     const deletedActionButtons = document.querySelectorAll('#deleted-btn-view, #btn-restore, #btn-delete-permanent');
-    
-    if (deletedSelectAll) {
-        deletedSelectAll.addEventListener('change', function() {
-            deletedRowCheckboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-            updateDeletedActionButtons();
-        });
-    }
-    
-    deletedRowCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateDeletedActionButtons);
-    });
-    
+
     function updateDeletedActionButtons() {
         const checkedCount = document.querySelectorAll('.deleted-row-checkbox:checked').length;
-        
         deletedActionButtons.forEach(button => {
             button.disabled = checkedCount === 0;
         });
-        
         if (checkedCount === 1) {
             deletedActionButtons.forEach(button => {
                 button.disabled = false;
@@ -118,6 +103,23 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('btn-restore').disabled = false;
             document.getElementById('btn-delete-permanent').disabled = false;
         }
+    }
+
+    if (deletedTableBody) {
+        deletedTableBody.addEventListener('change', function(e) {
+            if (e.target.classList.contains('deleted-row-checkbox')) {
+                updateDeletedActionButtons();
+            }
+        });
+    }
+    if (deletedSelectAll) {
+        deletedSelectAll.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.deleted-row-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateDeletedActionButtons();
+        });
     }
     
     // Modales
@@ -130,7 +132,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewButton = document.getElementById('btn-view');
     if (viewButton) {
         viewButton.addEventListener('click', function() {
-            openModal(viewEmployeeModal);
+            const selectedRow = document.querySelector('.row-checkbox:checked').closest('tr');
+            if (selectedRow) {
+                // Obtener los datos del empleado de los atributos de la fila seleccionada
+                const employeeId = selectedRow.getAttribute('data-id');
+                const employeeName = `${selectedRow.getAttribute('data-nombre')} ${selectedRow.getAttribute('data-apellido')}`;
+                const employeeDepartment = selectedRow.getAttribute('data-departamento');
+                const employeePosition = selectedRow.getAttribute('data-cargo');
+                const employeeHireDate = selectedRow.getAttribute('data-fecha');
+                const employeeStatus = selectedRow.getAttribute('data-estado');
+
+                // Asignar los datos al modal
+                document.getElementById('employee-id').textContent = employeeId;
+                document.getElementById('employee-name').textContent = employeeName;
+                document.getElementById('employee-department').textContent = employeeDepartment;
+                document.getElementById('employee-position').textContent = employeePosition;
+                document.getElementById('employee-hire-date').textContent = employeeHireDate;
+                document.getElementById('employee-status').textContent = employeeStatus;
+
+                // Abrir el modal
+                openModal(viewEmployeeModal);
+            }
         });
     }
     
@@ -138,7 +160,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const deletedViewButton = document.getElementById('deleted-btn-view');
     if (deletedViewButton) {
         deletedViewButton.addEventListener('click', function() {
-            openModal(viewEmployeeModal);
+            const selectedRow = document.querySelector('.deleted-row-checkbox:checked')?.closest('tr');
+            if (selectedRow) {
+                // Obtener los datos del empleado de las celdas de la fila seleccionada
+                const cells = selectedRow.querySelectorAll('td');
+                const employeeId = cells[1]?.textContent || '';
+                const employeeName = `${cells[2]?.textContent || ''} ${cells[3]?.textContent || ''}`.trim();
+                const employeeDepartment = cells[4]?.textContent || '';
+                const employeePosition = cells[5]?.textContent || '';
+                const employeeHireDate = cells[6]?.textContent || '';
+                const employeeStatus = 'Eliminado';
+
+                // Asignar los datos al modal
+                document.getElementById('employee-id').textContent = employeeId;
+                document.getElementById('employee-name').textContent = employeeName;
+                document.getElementById('employee-department').textContent = employeeDepartment;
+                document.getElementById('employee-position').textContent = employeePosition;
+                document.getElementById('employee-hire-date').textContent = employeeHireDate;
+                document.getElementById('employee-status').textContent = employeeStatus;
+
+                openModal(viewEmployeeModal);
+            }
         });
     }
     
@@ -147,6 +189,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (deleteButton) {
         deleteButton.addEventListener('click', function() {
             openModal(deleteConfirmModal);
+        });
+    }
+    
+    // Botón Editar
+    const editButton = document.getElementById('btn-edit');
+    if (editButton) {
+        editButton.addEventListener('click', function() {
+            const selectedRow = document.querySelector('.row-checkbox:checked');
+            if (selectedRow) {
+                const tr = selectedRow.closest('tr');
+                const cedula = tr.getAttribute('data-id');
+                if (cedula) {
+                    window.location.href = `EditarFormulario.php?cedula=${encodeURIComponent(cedula)}`;
+                }
+            }
         });
     }
     
@@ -194,14 +251,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeleteBtn = document.getElementById('confirm-delete');
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', function() {
-            // Aquí iría la lógica para eliminar los registros
-            // Por ahora, solo cerramos el modal y mostramos un mensaje
+            const selectedRows = document.querySelectorAll('#employees-table tbody input[type="checkbox"]:checked');
+            const employeeIds = Array.from(selectedRows).map(row => row.closest('tr').dataset.id);
+
+            if (employeeIds.length > 0) {
+                fetch('ajaxHandler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'deleteEmployees', employeeIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Registro(s) eliminado(s) correctamente');
+
+                        // Eliminar filas seleccionadas de la tabla de empleados
+                        selectedRows.forEach(row => row.closest('tr').remove());
+
+                        // Actualizar la tabla de eliminados
+                        updateDeletedEmployeesTable();
+                    } else {
+                        alert('Error al eliminar los registros.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la solicitud.');
+                });
+            } else {
+                alert('Por favor, seleccione al menos un registro para eliminar.');
+            }
+
             closeModal(deleteConfirmModal);
-            alert('Registro(s) eliminado(s) correctamente');
-            
-            // Cambiar a la sección de eliminados
-            const eliminadosItem = document.querySelector('.sidebar-menu li[data-section="eliminados"]');
-            eliminadosItem.click();
         });
     }
     
@@ -209,13 +292,66 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmRestoreBtn = document.getElementById('confirm-restore');
     if (confirmRestoreBtn) {
         confirmRestoreBtn.addEventListener('click', function() {
-            // Aquí iría la lógica para restaurar los registros
+            // Obtener cédulas seleccionadas en la tabla de eliminados
+            const selectedRows = document.querySelectorAll('#deleted-employees-table tbody input.deleted-row-checkbox:checked');
+            const employeeIds = Array.from(selectedRows).map(row => row.closest('tr').children[1].textContent.trim());
+            if (employeeIds.length > 0) {
+                fetch('ajaxHandler.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'restoreEmployees', employeeIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Registro(s) restaurado(s) correctamente');
+                        // Actualizar ambas tablas
+                        updateDeletedEmployeesTable();
+                        location.reload(); // Para refrescar la tabla de empleados activos
+                    } else {
+                        alert('Error al restaurar los registros.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la solicitud.');
+                });
+            } else {
+                alert('Por favor, seleccione al menos un registro para restaurar.');
+            }
             closeModal(restoreConfirmModal);
-            alert('Registro(s) restaurado(s) correctamente');
-            
-            // Cambiar a la sección de empleados
-            const empleadosItem = document.querySelector('.sidebar-menu li[data-section="empleados"]');
-            empleadosItem.click();
+        });
+    }
+    
+    // Botón Eliminar Permanente
+    const deletePermanentButton = document.getElementById('btn-delete-permanent');
+    if (deletePermanentButton) {
+        deletePermanentButton.addEventListener('click', function() {
+            if (!confirm('¿Está seguro que desea eliminar permanentemente el(los) registro(s) seleccionado(s)? Esta acción no se puede deshacer.')) return;
+            const selectedRows = document.querySelectorAll('#deleted-employees-table tbody input.deleted-row-checkbox:checked');
+            const employeeIds = Array.from(selectedRows).map(row => row.closest('tr').children[1].textContent.trim());
+            if (employeeIds.length > 0) {
+                fetch('ajaxHandler.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'deletePermanent', employeeIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Registro(s) eliminado(s) permanentemente');
+                        updateDeletedEmployeesTable();
+                    } else {
+                        alert('Error al eliminar permanentemente los registros.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la solicitud.');
+                });
+            } else {
+                alert('Por favor, seleccione al menos un registro para eliminar.');
+            }
         });
     }
     
@@ -253,4 +389,49 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    function updateDeletedEmployeesTable() {
+        fetch('ajaxHandler.php?action=getDeletedEmployees')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#deleted-employees-table tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(employee => {
+                    // Formatear la fecha a dd/mm/yyyy
+                    let fecha = '';
+                    if (employee.f_contra) {
+                        const dateObj = new Date(employee.f_contra);
+                        if (!isNaN(dateObj.getTime())) {
+                            const day = String(dateObj.getDate()).padStart(2, '0');
+                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const year = dateObj.getFullYear();
+                            fecha = `${day}/${month}/${year}`;
+                        } else {
+                            fecha = employee.f_contra;
+                        }
+                    }
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="deleted-row-checkbox"></td>
+                        <td>${employee.cedula}</td>
+                        <td>${employee.nombre1}</td>
+                        <td>${employee.apellido1}</td>
+                        <td>${employee.departamento}</td>
+                        <td>${employee.cargo}</td>
+                        <td>${fecha}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error al actualizar la tabla de eliminados:', error);
+            });
+    }
+    
+    // Llamar a la función para cargar la tabla de eliminados al inicio
+    updateDeletedEmployeesTable();
+    
+    // Actualizar la tabla de eliminados cada 5 segundos
+    setInterval(updateDeletedEmployeesTable, 5000);
 });
