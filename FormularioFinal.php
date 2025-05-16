@@ -75,7 +75,7 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
                         </div>
                         <div class="form-group">
                             <label for="second-lastname">Segundo Apellido:</label>
-                            <input type="text" id="second-lastname" name="second-lastname" required>
+                            <input type="text" id="second-lastname" name="second-lastname">
                         </div>
                         <div class="form-group">
                             <label for="genero">Género:</label>
@@ -130,12 +130,13 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
                         <div class="form-group">
                             <label for="nacionalidad">Nacionalidad:</label>
                             <select id="nacionalidad" name="nacionalidad" required>
-                                <option value="" disabled selected>Seleccione una nacionalidad</option>
+                                <option value="" disabled>Seleccione una nacionalidad</option>
                                 <?php
-                                $query = "SELECT codigo, pais FROM nacionalidad";
+                                $query = "SELECT codigo, pais FROM nacionalidad ORDER BY pais";
                                 $result = $conexion->query($query);
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['codigo']}'>{$row['pais']}</option>";
+                                    $selected = (strtolower($row['pais']) === 'panamá') ? 'selected' : '';
+                                    echo "<option value='{$row['codigo']}' $selected>{$row['pais']}</option>";
                                 }
                                 ?>
                             </select>
