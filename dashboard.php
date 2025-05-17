@@ -415,8 +415,16 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                             <p id="employee-id"></p>
                         </div>
                         <div class="info-group">
+                            <label>Cédula:</label>
+                            <p id="employee-cedula"></p>
+                        </div>
+                        <div class="info-group">
                             <label>Nombre:</label>
                             <p id="employee-name"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Apellido:</label>
+                            <p id="employee-lastname"></p>
                         </div>
                         <div class="info-group">
                             <label>Departamento:</label>
@@ -433,6 +441,22 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
                         <div class="info-group">
                             <label>Estado:</label>
                             <p id="employee-status"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Correo:</label>
+                            <p id="employee-email"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Teléfono:</label>
+                            <p id="employee-phone"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Dirección:</label>
+                            <p id="employee-address"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Fecha de Nacimiento:</label>
+                            <p id="employee-birthdate"></p>
                         </div>
                     </div>
                 </div>

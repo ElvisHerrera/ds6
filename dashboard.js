@@ -157,26 +157,31 @@ document.addEventListener("DOMContentLoaded", () => {
     viewButton.addEventListener("click", () => {
       const selectedRow = document
         .querySelector('#employees-table tbody tr:not([style*="display: none"]) .row-checkbox:checked')
-        .closest("tr")
+        ?.closest("tr")
       if (selectedRow) {
-        // Obtener los datos del empleado de los atributos de la fila seleccionada
-        const employeeId = selectedRow.getAttribute("data-id")
-        const employeeName = `${selectedRow.getAttribute("data-nombre")} ${selectedRow.getAttribute("data-apellido")}`
-        const employeeDepartment = selectedRow.getAttribute("data-departamento")
-        const employeePosition = selectedRow.getAttribute("data-cargo")
-        const employeeHireDate = selectedRow.getAttribute("data-fecha")
-        const employeeStatus = selectedRow.getAttribute("data-estado")
-
-        // Asignar los datos al modal
-        document.getElementById("employee-id").textContent = employeeId
-        document.getElementById("employee-name").textContent = employeeName
-        document.getElementById("employee-department").textContent = employeeDepartment
-        document.getElementById("employee-position").textContent = employeePosition
-        document.getElementById("employee-hire-date").textContent = employeeHireDate
-        document.getElementById("employee-status").textContent = employeeStatus
-
-        // Abrir el modal
-        openModal(viewEmployeeModal)
+        const cedula = selectedRow.getAttribute("data-id")
+        // AJAX para obtener todos los datos del empleado
+        fetch(`ajaxHandler.php?action=getEmployeeDetails&cedula=${encodeURIComponent(cedula)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            // Llenar los campos del modal (excepto contraseña)
+            document.getElementById("employee-id").textContent = data.id || ""
+            document.getElementById("employee-cedula").textContent = data.cedula || ""
+            document.getElementById("employee-name").textContent = data.nombre || ""
+            document.getElementById("employee-lastname").textContent = data.apellido || ""
+            document.getElementById("employee-department").textContent = data.departamento || ""
+            document.getElementById("employee-position").textContent = data.cargo || ""
+            document.getElementById("employee-hire-date").textContent = data.f_contra || ""
+            document.getElementById("employee-status").textContent = data.estado || ""
+            document.getElementById("employee-email").textContent = data.correo || ""
+            document.getElementById("employee-phone").textContent = data.telefono || ""
+            document.getElementById("employee-address").textContent = data.direccion || ""
+            document.getElementById("employee-birthdate").textContent = data.f_nacimiento || ""
+            openModal(viewEmployeeModal)
+          })
+          .catch(() => {
+            showNotificationModal("No se pudo obtener la información del empleado.", "Error")
+          })
       }
     })
   }

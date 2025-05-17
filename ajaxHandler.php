@@ -179,5 +179,32 @@ LEFT JOIN cargo c ON e.cargo = c.codigo";
 
     echo json_encode($deletedEmployees);
     exit;
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getEmployeeDetails' && isset($_GET['cedula'])) {
+    $cedula = $_GET['cedula'];
+    $stmt = $conexion->prepare("SELECT e.cedula, e.prefijo, e.tomo, e.asiento, e.nombre1, e.nombre2, e.apellido1, e.apellido2, e.apellidoc, e.genero, e.estado_civil, e.tipo_sangre, e.usa_ac, e.f_nacimiento, e.celular, e.telefono, e.correo, e.provincia, e.distrito, e.corregimiento, e.calle, e.casa, e.comunidad, e.nacionalidad, e.f_contra, e.cargo, c.nombre AS cargo_nombre, e.departamento, d.nombre AS departamento_nombre, e.estado FROM empleados e LEFT JOIN cargo c ON e.cargo = c.codigo LEFT JOIN departamento d ON e.departamento = d.codigo WHERE e.cedula = ?");
+    $stmt->bind_param('s', $cedula);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        // Formatear datos para el modal (sin contraseña)
+        $data = [
+            'id' => $row['cedula'],
+            'cedula' => $row['cedula'],
+            'nombre' => trim($row['nombre1'] . ' ' . $row['nombre2']),
+            'apellido' => trim($row['apellido1'] . ' ' . $row['apellido2'] . ' ' . $row['apellidoc']),
+            'departamento' => $row['departamento_nombre'],
+            'cargo' => $row['cargo_nombre'],
+            'f_contra' => $row['f_contra'],
+            'estado' => $row['estado'] == 0 ? 'Activo' : 'Inactivo',
+            'correo' => $row['correo'],
+            'telefono' => $row['telefono'],
+            'direccion' => trim($row['calle'] . ' ' . $row['casa'] . ' ' . $row['comunidad']),
+            'f_nacimiento' => $row['f_nacimiento'],
+        ];
+        echo json_encode($data);
+    } else {
+        echo json_encode(['error' => 'Empleado no encontrado']);
+    }
+    exit;
 }
 ?>
