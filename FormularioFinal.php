@@ -355,6 +355,42 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
             }
 
             telefonoInput.addEventListener('input', validateTelefono);
+
+            // Validación personalizada antes de enviar el formulario
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const firstNameInput = document.getElementById('first-name');
+                const firstLastNameInput = document.getElementById('first-lastname');
+                const firstName = firstNameInput.value.trim();
+                const firstLastName = firstLastNameInput.value.trim();
+                // Contar solo letras (ignorando espacios)
+                const firstNameLetters = firstName.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '');
+                const firstLastNameLetters = firstLastName.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '');
+                let valid = true;
+                let message = '';
+                if (firstNameLetters.length < 2) {
+                    valid = false;
+                    message += 'El primer nombre debe tener al menos 2 letras.\n';
+                }
+                if (firstLastNameLetters.length < 2) {
+                    valid = false;
+                    message += 'El primer apellido debe tener al menos 2 letras.';
+                }
+                if (!valid) {
+                    alert(message);
+                    event.preventDefault();
+                    // Opcional: enfocar el primer campo inválido
+                    if (firstNameLetters.length < 2) {
+                        firstNameInput.focus();
+                    } else if (firstLastNameLetters.length < 2) {
+                        firstLastNameInput.focus();
+                    }
+                } else {
+                    // Limpiar espacios antes de enviar
+                    firstNameInput.value = firstName;
+                    firstLastNameInput.value = firstLastName;
+                }
+            });
         });
 
         function cargarDistritos(provinciaId) {
