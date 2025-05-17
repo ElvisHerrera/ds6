@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Registro</title>
-    <link rel="stylesheet" href="formulario.css">
+    <link rel="stylesheet" href="styles/formulario.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                     <div class="form-row three-columns">
                         <div class="form-group">
                             <label for="Cedula">Prefijo:</label>
-                            <select id="Cedula" name="Cedula" required disabled>
+                            <select id="Cedula" name="Cedula" required readonly>
                                 <option value="" disabled></option>
                                 <?php
                                 for ($i = 1; $i <= 13; $i++) {
@@ -103,11 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Cedula'], $_GET['cedu
                         </div>
                         <div class="form-group">
                             <label for="tomo">Tomo:</label>
-                            <input type="text" id="tomo" name="tomo" maxlength="4" required disabled value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['tomo']) : ''; ?>">
+                            <input type="text" id="tomo" name="tomo" maxlength="4" required readonly value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['tomo']) : ''; ?>">
                         </div>
                         <div class="form-group">
                             <label for="asiento">Asiento:</label>
-                            <input type="text" id="asiento" name="asiento" maxlength="5" required disabled value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['asiento']) : ''; ?>">
+                            <input type="text" id="asiento" name="asiento" maxlength="5" required readonly value="<?php echo $empleadoData ? htmlspecialchars($empleadoData['asiento']) : ''; ?>">
                         </div>
                     </div>
 

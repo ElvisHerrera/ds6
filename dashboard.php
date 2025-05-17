@@ -37,7 +37,7 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Administrativo</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -526,6 +526,6 @@ if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
     </div>
 
     <!-- Archivo AJAX para actualizar datos dinámicamente -->
-    <script src="dashboard.js"></script>
+    <script src="scripts/dashboard.js"></script>
 </body>
 </html>

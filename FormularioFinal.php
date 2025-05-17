@@ -8,7 +8,7 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Registro</title>
-    <link rel="stylesheet" href="formulario.css">
+    <link rel="stylesheet" href="styles/formulario.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,7 +18,7 @@ include 'conexion.php'; // Incluye la conexión a la base de datos
             <p>Complete el formulario con la información requerida</p>
         </header>
 
-        <form action="/submit.php" method="post">
+        <form action="submit.php" method="post">
             <!-- Sección Datos Generales -->
             <section class="form-section">
                 <div class="section-header">

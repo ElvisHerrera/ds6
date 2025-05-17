@@ -62,6 +62,7 @@ $conn->close();
 $nombreCompleto = $empleado['nombre1'] . " " . $empleado['nombre2'] . " " . 
                 $empleado['apellido1'] . " " . $empleado['apellido2'];
 
+
 // Formatear la dirección completa
 $direccionCompleta = "Provincia: " . $empleado['nombre_provincia'] . ", Distrito: " . 
                     $empleado['nombre_distrito'] . ", Corregimiento: " . 
@@ -86,7 +87,7 @@ $fechaNacimiento = date('d-m-y', strtotime($empleado['f_nacimiento']));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil del Empleado</title>
-    <link rel="stylesheet" href="empleado-style.css">
+    <link rel="stylesheet" href="styles/empleado-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -261,6 +262,6 @@ $fechaNacimiento = date('d-m-y', strtotime($empleado['f_nacimiento']));
         </div>
     </div>
     
-    <script src="empleado-script.js"></script>
+    <script src="scripts/empleado-script.js"></script>
 </body>
 </html>
