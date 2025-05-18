@@ -206,5 +206,63 @@ LEFT JOIN cargo c ON e.cargo = c.codigo";
         echo json_encode(['error' => 'Empleado no encontrado']);
     }
     exit;
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getDeletedEmployeeDetails' && isset($_GET['cedula'])) {
+    header('Content-Type: application/json');
+    
+    try {
+        $cedula = $_GET['cedula'];
+        $stmt = $conexion->prepare("SELECT e.cedula, e.nombre1, e.nombre2, e.apellido1, e.apellido2, e.apellidoc, e.genero, e.estado_civil, e.tipo_sangre, e.usa_ac, e.f_nacimiento, e.celular, e.telefono, e.correo, 
+            e.calle, e.casa, e.comunidad, e.nacionalidad, e.f_contra, 
+            e.cargo, car.nombre AS cargo_nombre, 
+            e.departamento, dep.nombre AS departamento_nombre, 
+            e.estado 
+        FROM e_eliminados e 
+        LEFT JOIN cargo car ON e.cargo = car.codigo 
+        LEFT JOIN departamento dep ON e.departamento = dep.codigo
+        WHERE e.cedula = ?");
+        
+        if (!$stmt) {
+            throw new Exception("Error en la preparación de la consulta: " . $conexion->error);
+        }
+        
+        $stmt->bind_param('s', $cedula);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        $result = $stmt->get_result();
+        $employee = $result->fetch_assoc();
+        
+        if ($employee) {
+            // Formatear la dirección solo con calle, casa y comunidad
+            $direccion = [];
+            if (!empty($employee['calle'])) $direccion[] = $employee['calle'];
+            if (!empty($employee['casa'])) $direccion[] = $employee['casa'];
+            if (!empty($employee['comunidad'])) $direccion[] = $employee['comunidad'];
+            $employee['direccion'] = implode(', ', $direccion);
+            
+            // Formatear los datos para que coincidan con el formato esperado por el frontend
+            $data = [
+                'cedula' => $employee['cedula'],
+                'nombre1' => trim($employee['nombre1'] . ' ' . $employee['nombre2']),
+                'apellido1' => trim($employee['apellido1'] . ' ' . $employee['apellido2'] . ' ' . $employee['apellidoc']),
+                'departamento' => $employee['departamento_nombre'],
+                'cargo' => $employee['cargo_nombre'],
+                'f_contra' => $employee['f_contra'],
+                'correo' => $employee['correo'],
+                'telefono' => $employee['telefono'],
+                'direccion' => $employee['direccion'],
+                'f_nacimiento' => $employee['f_nacimiento']
+            ];
+            
+            echo json_encode($data);
+        } else {
+            echo json_encode(['error' => 'Empleado no encontrado']);
+        }
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
 }
 ?>

@@ -194,24 +194,41 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelector('#deleted-employees-table tbody tr:not([style*="display: none"]) .deleted-row-checkbox:checked')
         ?.closest("tr")
       if (selectedRow) {
-        // Obtener los datos del empleado de las celdas de la fila seleccionada
-        const cells = selectedRow.querySelectorAll("td")
-        const employeeId = cells[1]?.textContent || ""
-        const employeeName = `${cells[2]?.textContent || ""} ${cells[3]?.textContent || ""}`.trim()
-        const employeeDepartment = cells[4]?.textContent || ""
-        const employeePosition = cells[5]?.textContent || ""
-        const employeeHireDate = cells[6]?.textContent || ""
-        const employeeStatus = "Eliminado"
-
-        // Asignar los datos al modal
-        document.getElementById("employee-id").textContent = employeeId
-        document.getElementById("employee-name").textContent = employeeName
-        document.getElementById("employee-department").textContent = employeeDepartment
-        document.getElementById("employee-position").textContent = employeePosition
-        document.getElementById("employee-hire-date").textContent = employeeHireDate
-        document.getElementById("employee-status").textContent = employeeStatus
-
-        openModal(viewEmployeeModal)
+        const cedula = selectedRow.children[1].textContent.trim()
+        console.log("Consultando empleado eliminado con cédula:", cedula)
+        
+        // AJAX para obtener todos los datos del empleado eliminado
+        fetch(`ajaxHandler.php?action=getDeletedEmployeeDetails&cedula=${encodeURIComponent(cedula)}`)
+          .then((response) => {
+            console.log("Respuesta del servidor:", response)
+            return response.json()
+          })
+          .then((data) => {
+            console.log("Datos recibidos:", data)
+            if (data.error) {
+              throw new Error(data.error)
+            }
+            
+            // Llenar los campos del modal
+            document.getElementById("employee-id").textContent = data.cedula || ""
+            document.getElementById("employee-cedula").textContent = data.cedula || ""
+            document.getElementById("employee-name").textContent = data.nombre1 || ""
+            document.getElementById("employee-lastname").textContent = data.apellido1 || ""
+            document.getElementById("employee-department").textContent = data.departamento || ""
+            document.getElementById("employee-position").textContent = data.cargo || ""
+            document.getElementById("employee-hire-date").textContent = data.f_contra || ""
+            document.getElementById("employee-status").textContent = "Eliminado"
+            document.getElementById("employee-email").textContent = data.correo || ""
+            document.getElementById("employee-phone").textContent = data.telefono || ""
+            document.getElementById("employee-address").textContent = data.direccion || ""
+            document.getElementById("employee-birthdate").textContent = data.f_nacimiento || ""
+            
+            openModal(viewEmployeeModal)
+          })
+          .catch((error) => {
+            console.error("Error al obtener datos:", error)
+            showNotificationModal("No se pudo obtener la información del empleado eliminado: " + error.message, "Error")
+          })
       }
     })
   }
